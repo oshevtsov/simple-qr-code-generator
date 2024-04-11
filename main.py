@@ -28,8 +28,8 @@ def parse_args():
         help="Output image format",
     )
     parser.add_argument(
-        "-o",
-        "--out",
+        "-n",
+        "--name",
         type=str,
         default="out",
         help="Output image name (without extension)",
@@ -40,19 +40,23 @@ def parse_args():
         type=str,
         default="cm",
         choices=["em", "ex", "px", "pt", "pc", "cm", "mm"],
-        help="Output image format",
+        help="Output image size unit (SVG only)",
     )
     return parser.parse_args()
 
 
 def generate_qr(args):
     qr_code = segno.make_qr(args.input)
-    qr_code.save(
-        f"{args.out}.{args.format}",
-        border=args.border,
-        scale=args.scale,
-        unit=args.unit,
-    )
+    params = {
+        "out": f"{args.name}.{args.format}",
+        "border": args.border,
+        "scale": args.scale,
+    }
+
+    if args.format == "svg":
+        params["unit"] = args.unit
+
+    qr_code.save(**params)
 
 
 def main():
